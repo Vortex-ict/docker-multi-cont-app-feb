@@ -1,0 +1,38 @@
+sudo: required
+language: generic
+services:
+  - docker
+
+before install:
+  - docker build -t vortexict/docker-multi-react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  # - docker run -e CI=true vortexict/docker-multi-react-test npm run test
+  - docker run -e CI=true vortexict/docker-multi-react-test npm test -- --coverage
+
+after_succes:
+  # build the prod docker images
+  - docker build -t vortexict/docker-multi-client ./client
+  - docker build -t vortexict/docker-multi-nginx ./nginx
+  - docker build -t vortexict/docker-multi-api ./server
+  - docker build -t vortexict/docker-multi-worker ./worker
+  # Login on docker hub for pushing the docker images. Creds are in TRAVIS-CI under repo settings env var
+  - echo "$DOCKER_PW" | docker login -u "$DOCKER_ID" --password-stdin
+  # push the images to docker hub
+  - docker push vortexict/docker-multi-client
+  - docker push vortexict/docker-multi-nginx
+  - docker push vortexict/docker-multi-api
+  - docker push vortexict/docker-multi-worker
+
+
+# deploy:
+#   provider: elasticbeanstalk
+#   region: "eu-west-1"
+#   app: "docker-react"
+#   env: "DockerReact-env"
+#   bucket_name: "elasticbeanstalk-eu-west-1-762124617171"
+#   bucket_path: "docker-react"
+#   on:
+#     branch: master  
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
