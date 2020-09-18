@@ -8,8 +8,6 @@ before install:
 
 script:
   - docker run -e CI=true vortexict/docker-multi-react-test npm test
-  # - docker run -e CI=true vortexict/docker-multi-react-test npm test -- --coverage WERKT NIET
-  # - docker run -e CI=true USERNAME/react-test npm test
 
 after_succes:
   # build the prod docker images
@@ -27,12 +25,13 @@ after_succes:
 
 
 # deploy:
+#   edge: true
 #   provider: elasticbeanstalk
 #   region: "eu-west-1"
-#   app: "docker-react"
-#   env: "DockerReact-env"
-#   bucket_name: "elasticbeanstalk-eu-west-1-762124617171"
-#   bucket_path: "docker-react"
+#   app: "docker-multi-cont-app-feb"
+#   env: ""
+#   bucket_name: "elasticbeanstalk-eu-west-***"
+#   bucket_path: "docker-multi-cont-app-feb"
 #   on:
 #     branch: master  
 #   access_key_id: $AWS_ACCESS_KEY
